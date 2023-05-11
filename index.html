@@ -1,0 +1,122 @@
+# simulador
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulador de Financiamento - Sicoob</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: rgb(0, 54, 65);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 50%;
+        }
+
+        .card {
+            background-color: white;
+            color: #00548C;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        @media print {
+            body {
+                zoom: 75%;
+            }
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            document.getElementById('botao').addEventListener('click', calcular);
+            document.getElementById('imprimir').addEventListener('click', function() {
+                window.print();
+            });
+        }
+
+        function calcular() {
+            var valor = parseFloat(document.getElementById("valor").value);
+            var parcelas = parseInt(document.getElementById("parcelas").value);
+            var juros = parseFloat(document.getElementById("juros").value) / 100 / 12;
+            var sistema = document.getElementById("sistema").value;
+
+            var totalParcela = 0;
+            var totalJuros = 0;
+            var resultado = "";
+
+            if (sistema === "SAC") {
+                var amortizacao = valor / parcelas;
+                for (var i = 0; i < parcelas; i++) {
+                    var jurosParcela = (valor - (amortizacao * i)) * juros;
+                    var valorParcela = amortizacao + jurosParcela;
+                    totalParcela += valorParcela;
+                    totalJuros += jurosParcela;
+                    resultado += "Parcela " + (i+1) + ": R$" + valorParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + " (Amortização: R$" + amortizacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ", Juros: R$" + jurosParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ")<br>";
+                }
+            } else { // sistema PRICE
+                var valorParcela = valor * (juros * Math.pow(1 + juros, parcelas)) / (Math.pow(1 + juros, parcelas) - 1);
+                for (var i = 0; i < parcelas; i++) {
+                    var jurosParcela = valor * juros;
+                    var amortizacao = valorParcela - jurosParcela;
+                    valor -= amortizacao;
+                    totalParcela += valorParcela;
+                    totalJuros += jurosParcela;
+                    resultado += "Parcela " + (i+1) + ": R$" + valorParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + " (Amortização: R$" + amortizacao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ", Juros: R$" + jurosParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) + ")<br>";
+                }
+            }
+
+            document.getElementById
+            ("resultado").innerHTML = resultado;
+            document.getElementById("totalParcela").innerHTML = "Total de Parcelas Pagas: " + totalParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById("totalJuros").innerHTML = "Total de Juros Pagos: " + totalJuros.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+            </script>
+            
+            </head>
+            <body>
+                <div class="text-center"> <!-- Adicionando a classe text-center para centralizar -->
+                    <img src="https://www.sicoob.com.br/image/layout_set_logo?img_id=6748533&t=1683771768218" alt="Logo Sicoob" class="mb-4">
+                </div>
+                
+                <div class="container">
+                    <div class="row justify-content-center"> <!-- Adicionando as classes "row" e "justify-content-center" -->
+                        <div class="text-center">
+                            <div class="form-group col-md-15">
+                                <label for="valor">Valor do Financiamento: </label>
+                                <input type="number" class="form-control" id="valor" step="0.01" min="0">
+                            </div>
+                            <div class="form-group col-md-15"> 
+                                <label for="parcelas">Número de Parcelas: </label>
+                                <input type="number" class="form-control" id="parcelas" min="0">
+                            </div>
+                            <div class="form-group col-md-15">
+                                <label for="juros">Taxa de Juros (em %): </label>
+                                <input type="number" class="form-control" id="juros" step="0.01" min="0">
+                            </div>
+                            <div class="form-group col-md-15">
+                                <label for="sistema">Sistema de Amortização: </label>
+                                <select class="form-control" id="sistema">
+                                    <option value="SAC">SAC</option>
+                                    <option value="PRICE">PRICE</option>
+                                </select>
+                            </div>
+                            <button id="botao" class="btn btn-warning">Calcular</button>
+                            <button id="imprimir" class="btn btn-warning">Imprimir</button>
+                        </div>
+                    </div>
+                </div>
+                
+    
+    <div class="card text-center"> <!-- Adicionando a classe text-center para centralizar -->
+        <h2>Resultados:</h2>
+        <p id="resultado"></p>
+        <p id="totalParcela"></p>
+        <p id="totalJuros"></p>
+        <button id="solicitacao" class="btn btn-warning" onclick="window.open('mailto:bryan.rodrigues@sicoob.com.br?subject=Solicitação de Financiamento&body=Estou interessado em financiamento. Por favor entre em contato.', '_blank')">Enviar Solicitação</button>
+    </div>
+</div>
+</body>
+</html>
